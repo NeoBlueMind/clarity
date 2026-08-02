@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, CalendarDays, Clock3, Copy, Link2, Share2 } from
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import FlowerMark from '../../components/FlowerMark.astro';
 import { articleMeta, formatDate, getArticleHref, sortArticles, tableOfContents } from '../../lib/articles';
+import { withBase } from '../../lib/path';
 
 export async function getStaticPaths() {
   const entries = sortArticles(await getCollection('articles'));
@@ -37,7 +38,7 @@ const typedArticle = article as Article;
   <div class="narrow-column article-layout">
     <article>
       <header class="article-header">
-        <a class="section-link" href="/articles/"><ArrowLeft /> Back to articles</a>
+        <a class="section-link" href={withBase('/articles/')}><ArrowLeft /> Back to articles</a>
         <div class="eyebrow" style="margin-top:28px">{article.category} / Day {String(article.number).padStart(3, '0')}</div>
         <h1 class="display">{article.title}</h1>
         <p class="article-description">{article.description}</p>

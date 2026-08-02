@@ -1,5 +1,7 @@
 ---
+import { withBase } from '../lib/path';
+
 const { class: className = '', title = 'Clarity flower', ...rest } = Astro.props;
 ---
 
-<img class={className} src="/favicon.svg" alt={title} {...rest} />
+<img class={className} src={withBase('/favicon.svg')} alt={title} {...rest} />

@@ -1,6 +1,7 @@
 ---
 import { Search, X } from 'lucide-astro';
 const { articles = [] } = Astro.props;
+const base = import.meta.env.BASE_URL ?? '/';
 ---
 
 <div class="search-backdrop" data-search-backdrop aria-hidden="true">
@@ -16,7 +17,7 @@ const { articles = [] } = Astro.props;
   </div>
 </div>
 
-<script is:inline define:vars={{ articles }}>
+<script is:inline define:vars={{ articles, base }}>
   const backdrop = document.querySelector('[data-search-backdrop]');
   const input = document.querySelector('[data-search-input]');
   const results = document.querySelector('[data-search-results]');
@@ -40,7 +41,7 @@ const { articles = [] } = Astro.props;
       results.innerHTML = '<div class="search-empty">No articles matched that search.</div>';
       return;
     }
-    results.innerHTML = matches.map((article) => `<a class="search-result" href="/articles/${article.slug}"><span class="search-result-title">${article.title}</span><span class="search-result-meta">${article.category} · ${article.readingTime} min read</span></a>`).join('');
+    results.innerHTML = matches.map((article) => `<a class="search-result" href="${base}articles/${article.slug}"><span class="search-result-title">${article.title}</span><span class="search-result-meta">${article.category} · ${article.readingTime} min read</span></a>`).join('');
   };
   openButtons.forEach((button) => button.addEventListener('click', open));
   closeButton?.addEventListener('click', close);

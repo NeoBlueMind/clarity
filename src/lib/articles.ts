@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
+import { withBase } from './path';
 
 export type ArticleEntry = CollectionEntry<'articles'>;
 
@@ -58,7 +59,7 @@ export const sortArticles = (entries: ArticleEntry[]) => entries
   .filter((entry) => !entry.data.draft)
   .sort((a, b) => articleNumber(a) - articleNumber(b));
 
-export const getArticleHref = (entry: ArticleEntry | ReturnType<typeof articleMeta>) => `/articles/${entry.id.replace(/\.md$/, '')}`;
+export const getArticleHref = (entry: ArticleEntry | ReturnType<typeof articleMeta>) => withBase(`/articles/${entry.id.replace(/\.md$/, '')}`);
 
 export const formatDate = (date: Date) => new Intl.DateTimeFormat('en', {
   month: 'short',

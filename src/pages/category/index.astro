@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { articleMeta, sortArticles } from '../../lib/articles';
+import { withBase } from '../../lib/path';
 
 const articles = sortArticles(await getCollection('articles')).map(articleMeta);
 const categories = [...new Set(articles.map((article) => article.category))];
@@ -18,7 +19,7 @@ const categories = [...new Set(articles.map((article) => article.category))];
       <div class="category-list">
         {categories.map((category) => {
           const count = articles.filter((article) => article.category === category).length;
-          return <a class="category-row" href={`/category/${category.toLowerCase().replace(/\s+/g, '-')}/`}><span>{category}</span><span>{count} {count === 1 ? 'article' : 'articles'}</span></a>;
+          return <a class="category-row" href={withBase(`/category/${category.toLowerCase().replace(/\s+/g, '-')}/`)}><span>{category}</span><span>{count} {count === 1 ? 'article' : 'articles'}</span></a>;
         })}
       </div>
     </section>

@@ -1,17 +1,18 @@
 ---
 import { BookOpen, CalendarDays, Github, Home, Moon, PanelLeft, Search, Tags } from 'lucide-astro';
 import FlowerMark from './FlowerMark.astro';
+import { withBase } from '../lib/path';
 const { current = '' } = Astro.props;
 const links = [
-  { href: '/', label: 'Home', icon: Home, key: 'home' },
-  { href: '/articles/', label: 'Articles', icon: BookOpen, key: 'articles' },
-  { href: '/category/', label: 'Categories', icon: Tags, key: 'category' },
-  { href: '/roadmap/', label: 'Roadmap', icon: CalendarDays, key: 'roadmap' },
+  { href: withBase('/'), label: 'Home', icon: Home, key: 'home' },
+  { href: withBase('/articles/'), label: 'Articles', icon: BookOpen, key: 'articles' },
+  { href: withBase('/category/'), label: 'Categories', icon: Tags, key: 'category' },
+  { href: withBase('/roadmap/'), label: 'Roadmap', icon: CalendarDays, key: 'roadmap' },
 ];
 ---
 
 <aside class="sidebar" id="site-sidebar" aria-label="Primary navigation">
-  <a class="brand" href="/" aria-label="Clarity home">
+  <a class="brand" href={withBase('/')} aria-label="Clarity home">
     <FlowerMark class="brand-mark" title="Clarity flower mark" />
     <span class="brand-name">CLARITY</span>
   </a>
@@ -41,6 +42,6 @@ const links = [
 
 <div class="mobile-bar">
   <button class="icon-button" type="button" aria-label="Open navigation" data-toggle-sidebar><PanelLeft /></button>
-  <a class="mobile-brand" href="/"><FlowerMark title="Clarity flower mark" />CLARITY</a>
+  <a class="mobile-brand" href={withBase('/')}><FlowerMark title="Clarity flower mark" />CLARITY</a>
   <button class="icon-button" type="button" aria-label="Search" data-open-search><Search /></button>
 </div>

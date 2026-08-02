@@ -1,8 +1,11 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
+const isGitHubPages = process.env.GITHUB_PAGES === 'true';
+
 export default defineConfig({
-  site: 'https://clarity-archive.example',
+  site: isGitHubPages ? 'https://neobluemind.github.io/clarity/' : 'https://clarity-archive.example',
+  base: isGitHubPages ? '/clarity/' : '/',
   output: 'static',
   integrations: [sitemap()],
   markdown: {

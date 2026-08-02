@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar.astro';
 import SearchOverlay from '../components/SearchOverlay.astro';
 import FlowerMark from '../components/FlowerMark.astro';
 import { articleMeta } from '../lib/articles';
+import { withBase } from '../lib/path';
 
 const { title = 'CLARITY — Understand. Learn. Grow.', description = 'A permanent archive of carefully written articles covering AI models, machine learning, engineering, and emerging technologies.', current = '', articles = [], canonical } = Astro.props;
 type Article = ReturnType<typeof articleMeta>;
@@ -34,7 +35,7 @@ const searchIndex = typedArticles.map((article: Article) => ({ slug: article.slu
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <title>{pageTitle}</title>
   </head>
   <body>
@@ -42,7 +43,7 @@ const searchIndex = typedArticles.map((article: Article) => ({ slug: article.slu
       <Sidebar current={current} />
       <div class="content-shell">
         <div class="page-top">
-          <a href="/">CLARITY / {current ? current.toUpperCase() : 'ARCHIVE'}</a>
+          <a href={withBase('/')}>CLARITY / {current ? current.toUpperCase() : 'ARCHIVE'}</a>
           <div class="top-actions">
             <button class="top-search icon-button" type="button" data-open-search aria-label="Search the archive"><Search /> <span>Search</span> <kbd>⌘K</kbd></button>
             <a href="https://github.com" rel="noreferrer" aria-label="Clarity on GitHub"><ArrowUpRight /></a>
@@ -60,7 +61,7 @@ const searchIndex = typedArticles.map((article: Article) => ({ slug: article.slu
               </div>
               <nav class="footer-links" aria-label="Footer navigation">
                 <a href="https://github.com" rel="noreferrer">GitHub <ArrowUpRight style="width:12px; vertical-align:-2px" /></a>
-                <a href="/rss.xml">RSS</a>
+                <a href={withBase('/rss.xml')}>RSS</a>
                 <a href="mailto:hello@clarity.archive">Email</a>
               </nav>
             </div>
