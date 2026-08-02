@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+import { ArrowUpRight, Search } from 'lucide-astro';
+import Sidebar from '../components/Sidebar.astro';
+import SearchOverlay from '../components/SearchOverlay.astro';
+import FlowerMark from '../components/FlowerMark.astro';
+import { articleMeta } from '../lib/articles';
+
+const { title = 'CLARITY — Understand. Learn. Grow.', description = 'A permanent archive of carefully written articles covering AI models, machine learning, engineering, and emerging technologies.', current = '', articles = [], canonical } = Astro.props;
+type Article = ReturnType<typeof articleMeta>;
+const typedArticles = articles as Article[];
+const pageTitle = title === 'CLARITY — Understand. Learn. Grow.' ? title : `${title} — CLARITY`;
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'https://clarity-archive.example').href;
+const searchIndex = typedArticles.map((article: Article) => ({ slug: article.slug, title: article.title, description: article.description, category: article.category, tags: article.tags, readingTime: article.readingTime }));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#1F2B36" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="CLARITY" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <div class="site-shell">
+      <Sidebar current={current} />
+      <div class="content-shell">
+        <div class="page-top">
+          <a href="/">CLARITY / {current ? current.toUpperCase() : 'ARCHIVE'}</a>
+          <div class="top-actions">
+            <button class="top-search icon-button" type="button" data-open-search aria-label="Search the archive"><Search /> <span>Search</span> <kbd>⌘K</kbd></button>
+            <a href="https://github.com" rel="noreferrer" aria-label="Clarity on GitHub"><ArrowUpRight /></a>
+          </div>
+        </div>
+        <main>
+          <slot />
+        </main>
+        <footer class="site-footer">
+          <div class="content-column">
+            <div class="footer-inner">
+              <div>
+                <div class="footer-brand"><FlowerMark title="Clarity flower mark" /><span class="brand-name">CLARITY</span></div>
+                <p class="footer-quote">Knowledge compounds when shared.</p>
+              </div>
+              <nav class="footer-links" aria-label="Footer navigation">
+                <a href="https://github.com" rel="noreferrer">GitHub <ArrowUpRight style="width:12px; vertical-align:-2px" /></a>
+                <a href="/rss.xml">RSS</a>
+                <a href="mailto:hello@clarity.archive">Email</a>
+              </nav>
+            </div>
+            <div class="footer-bottom"><span>© {new Date().getFullYear()} Clarity archive</span><span>Understand. Learn. Grow.</span></div>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <SearchOverlay articles={searchIndex} />
+    <script is:inline>
+      const sidebar = document.querySelector('#site-sidebar');
+      document.querySelector('[data-toggle-sidebar]')?.addEventListener('click', () => sidebar?.classList.toggle('open'));
+      document.addEventListener('click', (event) => {
+        if (event.target.closest('a') && window.innerWidth < 760) sidebar?.classList.remove('open');
+      });
+      const progress = document.querySelector('[data-reading-progress]');
+      const updateProgress = () => {
+        if (!progress) return;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.width = `${max > 0 ? (window.scrollY / max) * 100 : 0}%`;
+      };
+      document.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    </script>
+  </body>
+</html>

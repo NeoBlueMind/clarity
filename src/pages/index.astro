@@ -1,0 +1,79 @@
+---
+import { ArrowRight } from 'lucide-astro';
+import { getCollection } from 'astro:content';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import FlowerMark from '../components/FlowerMark.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { articleMeta, sortArticles } from '../lib/articles';
+
+const entries = sortArticles(await getCollection('articles'));
+const articles = entries.map(articleMeta);
+const latest = [...articles].sort((a, b) => b.number - a.number).slice(0, 6);
+const featured = articles.filter((article) => article.featured).slice(0, 3);
+const categoryMap = new Map<string, number>();
+articles.forEach((article) => categoryMap.set(article.category, (categoryMap.get(article.category) ?? 0) + 1));
+const categories = [...categoryMap.entries()].sort((a, b) => b[1] - a[1]);
+---
+
+<SiteLayout articles={articles} current="home">
+  <section class="hero">
+    <div class="content-column hero-inner">
+      <div class="hero-copy">
+        <div class="eyebrow">A permanent knowledge archive</div>
+        <h1 class="hero-title display">CLARITY</h1>
+        <p class="hero-tagline">Understand. Learn. Grow.</p>
+        <p class="hero-description">A permanent archive of carefully written articles covering AI models, machine learning, engineering, and emerging technologies.</p>
+        <div class="hero-actions">
+          <a class="button" href="/articles/">Start reading <ArrowRight /></a>
+          <a class="button secondary" href="/articles/">Browse articles</a>
+        </div>
+      </div>
+      <div class="hero-flower"><FlowerMark title="A line illustration of the Clarity marigold flower" /></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="content-column">
+      <div class="section-header">
+        <div><div class="eyebrow">The archive</div><h2 class="section-title display">Latest articles</h2></div>
+        <a class="section-link" href="/articles/">View all articles <ArrowRight /></a>
+      </div>
+      <div class="article-grid">{latest.map((article) => <ArticleCard article={article} />)}</div>
+    </div>
+  </section>
+
+  <section class="section compact">
+    <div class="content-column split-section">
+      <div><div class="eyebrow">Explore the archive</div><h2 class="section-title display">Browse by category</h2><p class="section-lede">A structured index for moving from a single question to an entire field of thought.</p></div>
+      <div class="category-list">
+        <a class="category-row" href="/articles/"><span>All articles</span><span>{articles.length} entries <ArrowRight style="width:14px; vertical-align:-3px" /></span></a>
+        {categories.map(([category, count]) => <a class="category-row" href={`/category/${category.toLowerCase().replace(/\s+/g, '-')}/`}><span>{category}</span><span>{count} entries <ArrowRight style="width:14px; vertical-align:-3px" /></span></a>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section compact">
+    <div class="content-column">
+      <div class="roadmap-banner">
+        <div><div class="eyebrow">A deliberate pace</div><h3 class="display">225 days of understanding</h3><p>A guided study of the ideas, models, and systems shaping modern intelligence.</p></div>
+        <div><div class="roadmap-number display">{articles.length}<span class="subtle" style="font-size:1rem"> / 225</span></div><a class="section-link" href="/roadmap/">Open roadmap <ArrowRight /></a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="content-column">
+      <div class="section-header"><div><div class="eyebrow">Editor’s collection</div><h2 class="section-title display">Featured collection</h2></div></div>
+      <div class="article-grid">{featured.map((article) => <ArticleCard article={article} />)}</div>
+    </div>
+  </section>
+
+  <section class="section compact">
+    <div class="narrow-column about-copy">
+      <div class="flower-divider"><FlowerMark title="Clarity flower divider" /></div>
+      <div class="eyebrow">About Clarity</div>
+      <h2 class="section-title display">Make room for the useful ideas.</h2>
+      <p>Clarity is a quiet place to study technical subjects with enough context to remember them. Each article aims to leave behind a durable mental model, a sharper question, and a path to go deeper.</p>
+    </div>
+  </section>
+</SiteLayout>

@@ -1,0 +1,17 @@
+---
+import { Clock3 } from 'lucide-astro';
+import { articleMeta, getArticleHref } from '../lib/articles';
+const { article } = Astro.props;
+type Article = ReturnType<typeof articleMeta>;
+const typedArticle = article as Article;
+---
+
+<a class="article-card" href={getArticleHref(article)}>
+  <div class="card-meta"><span>{typedArticle.category}</span><span>{String(typedArticle.number).padStart(3, '0')}</span></div>
+  <h3 class="card-title display">{typedArticle.title}</h3>
+  <p class="card-description">{typedArticle.description}</p>
+  <div class="card-footer">
+    <span class="tag-list">{typedArticle.tags.slice(0, 2).map((tag: string) => <span class="tag">{tag}</span>)}</span>
+    <span><Clock3 style="width:12px; vertical-align:-2px" /> {typedArticle.readingTime} min</span>
+  </div>
+</a>

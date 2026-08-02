@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { articleMeta, sortArticles } from '../../lib/articles';
+
+const articles = sortArticles(await getCollection('articles')).map(articleMeta);
+const categories = [...new Set(articles.map((article) => article.category))];
+---
+
+<SiteLayout articles={articles} current="category" title="Categories">
+  <div class="narrow-column">
+    <section class="page-intro">
+      <div class="eyebrow">Index / Categories</div>
+      <h1 class="page-title display">Categories</h1>
+      <p>Follow a thread through the archive. Categories are derived from each article’s frontmatter, with the folder structure as a fallback.</p>
+    </section>
+    <section class="section compact">
+      <div class="category-list">
+        {categories.map((category) => {
+          const count = articles.filter((article) => article.category === category).length;
+          return <a class="category-row" href={`/category/${category.toLowerCase().replace(/\s+/g, '-')}/`}><span>{category}</span><span>{count} {count === 1 ? 'article' : 'articles'}</span></a>;
+        })}
+      </div>
+    </section>
+  </div>
+</SiteLayout>

@@ -1,0 +1,99 @@
+---
+import { render, getCollection } from 'astro:content';
+import { ArrowLeft, ArrowRight, CalendarDays, Clock3, Copy, Link2, Share2 } from 'lucide-astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import FlowerMark from '../../components/FlowerMark.astro';
+import { articleMeta, formatDate, getArticleHref, sortArticles, tableOfContents } from '../../lib/articles';
+
+export async function getStaticPaths() {
+  const entries = sortArticles(await getCollection('articles'));
+  const articles = entries.map(articleMeta);
+  return entries.map((entry, index) => ({
+    params: { slug: entry.id },
+    props: { entry, article: articles[index], articles, previous: articles[index - 1], next: articles[index + 1] },
+  }));
+}
+
+const { entry, article, articles, previous, next } = Astro.props;
+const { Content } = await render(entry);
+const toc = tableOfContents(entry.body);
+const canonical = new URL(`/articles/${entry.id}`, Astro.site ?? Astro.url).href;
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.title,
+  description: article.description,
+  datePublished: article.date.toISOString(),
+  author: { '@type': 'Person', name: article.author },
+  publisher: { '@type': 'Organization', name: 'CLARITY' },
+  mainEntityOfPage: canonical,
+};
+type Article = ReturnType<typeof articleMeta>;
+const typedArticle = article as Article;
+---
+
+<SiteLayout articles={articles} current="articles" title={article.title} description={article.description} canonical={canonical}>
+  <div class="progress-bar" data-reading-progress></div>
+  <div class="narrow-column article-layout">
+    <article>
+      <header class="article-header">
+        <a class="section-link" href="/articles/"><ArrowLeft /> Back to articles</a>
+        <div class="eyebrow" style="margin-top:28px">{article.category} / Day {String(article.number).padStart(3, '0')}</div>
+        <h1 class="display">{article.title}</h1>
+        <p class="article-description">{article.description}</p>
+        <div class="article-meta">
+          <span><CalendarDays /> {formatDate(article.date)}</span>
+          <span><Clock3 /> {article.readingTime} min read</span>
+          <span>By {article.author}</span>
+        </div>
+      </header>
+
+      <div class="article-body"><Content /></div>
+
+      <div class="article-utility">
+        <div class="tag-list">{typedArticle.tags.map((tag: string) => <span class="tag">{tag}</span>)}</div>
+        <div style="display:flex; gap:14px; flex-wrap:wrap">
+          <button class="utility-link icon-button" type="button" data-copy-link><Copy /> Copy link</button>
+          <a class="utility-link" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonical)}`} target="_blank" rel="noreferrer"><Share2 /> Share</a>
+          <a class="utility-link" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(canonical)}&text=${encodeURIComponent(article.title)}`} target="_blank" rel="noreferrer"><Link2 /> Post</a>
+        </div>
+      </div>
+
+      <nav class="article-end" aria-label="Article navigation">
+        {previous ? <a href={getArticleHref(previous)}><small><ArrowLeft style="width:12px; vertical-align:-2px" /> Previous</small>{previous.title}</a> : <span></span>}
+        {next ? <a class="next" href={getArticleHref(next)}><small>Next <ArrowRight style="width:12px; vertical-align:-2px" /></small>{next.title}</a> : <span></span>}
+      </nav>
+    </article>
+
+    <aside class="article-aside" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      <nav class="toc">
+        {toc.map((item) => <a class={`level-${item.level}`} href={`#${item.slug}`}>{item.title}</a>)}
+      </nav>
+      <div class="article-utility"><FlowerMark title="Clarity flower watermark" style="width:30px;color:var(--accent);opacity:.55" /><span class="subtle" style="font-size:.68rem">A note for the permanent archive.</span></div>
+    </aside>
+  </div>
+  <script is:inline>
+    const copyButton = document.querySelector('[data-copy-link]');
+    copyButton?.addEventListener('click', async () => {
+      await navigator.clipboard?.writeText(window.location.href);
+      copyButton.innerHTML = 'Copied';
+      window.setTimeout(() => { copyButton.innerHTML = 'Copy link'; }, 1600);
+    });
+  </script>
+  <script>
+    const diagramBlocks = [...document.querySelectorAll('pre code.language-mermaid')];
+    if (diagramBlocks.length) {
+      const { default: mermaid } = await import('mermaid');
+      mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'dark', fontFamily: 'Inter, sans-serif', themeVariables: { primaryColor: '#2F3F3C', primaryTextColor: '#F7F4EF', primaryBorderColor: '#C28A55', lineColor: '#9B5A34', secondaryColor: '#1F2B36', tertiaryColor: '#182024' } });
+      diagramBlocks.forEach((code) => {
+        const surface = document.createElement('div');
+        surface.className = 'mermaid-surface mermaid';
+        surface.textContent = code.textContent ?? '';
+        code.parentElement?.replaceWith(surface);
+      });
+      await mermaid.run({ nodes: [...document.querySelectorAll('.mermaid-surface')] as HTMLElement[] });
+    }
+  </script>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)}></script>
+</SiteLayout>

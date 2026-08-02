@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { articleMeta, formatDate, getArticleHref, sortArticles } from '../../lib/articles';
+
+const articles = sortArticles(await getCollection('articles')).map(articleMeta);
+---
+
+<SiteLayout articles={articles} current="articles" title="Articles">
+  <div class="narrow-column">
+    <section class="page-intro">
+      <div class="eyebrow">The permanent archive</div>
+      <h1 class="page-title display">Articles</h1>
+      <p>{articles.length} carefully written entries on AI models, machine learning, engineering, and the technologies changing how we think.</p>
+    </section>
+    <section class="section compact" aria-label="All articles">
+      <div class="article-list">
+        {articles.map((article) => (
+          <a class="article-row" href={getArticleHref(article)}>
+            <div class="article-index">{String(article.number).padStart(3, '0')}</div>
+            <div><h2 class="display">{article.title}</h2><p>{article.description}</p></div>
+            <div class="article-row-meta"><span>{article.category}</span><span>{article.readingTime} min</span><span>{formatDate(article.date)}</span></div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+</SiteLayout>

@@ -1,0 +1,46 @@
+---
+import { BookOpen, CalendarDays, Github, Home, Moon, PanelLeft, Search, Tags } from 'lucide-astro';
+import FlowerMark from './FlowerMark.astro';
+const { current = '' } = Astro.props;
+const links = [
+  { href: '/', label: 'Home', icon: Home, key: 'home' },
+  { href: '/articles/', label: 'Articles', icon: BookOpen, key: 'articles' },
+  { href: '/category/', label: 'Categories', icon: Tags, key: 'category' },
+  { href: '/roadmap/', label: 'Roadmap', icon: CalendarDays, key: 'roadmap' },
+];
+---
+
+<aside class="sidebar" id="site-sidebar" aria-label="Primary navigation">
+  <a class="brand" href="/" aria-label="Clarity home">
+    <FlowerMark class="brand-mark" title="Clarity flower mark" />
+    <span class="brand-name">CLARITY</span>
+  </a>
+
+  <p class="side-label">Library</p>
+  <nav class="side-nav">
+    {links.map(({ href, label, icon: Icon, key }) => (
+      <a class="side-link" href={href} aria-current={current === key ? 'page' : undefined}>
+        <Icon />
+        <span>{label}</span>
+      </a>
+    ))}
+  </nav>
+
+  <div class="side-divider"></div>
+  <p class="side-label">Tools</p>
+  <nav class="side-nav">
+    <button class="side-link" type="button" data-open-search><Search /><span>Search</span><kbd style="margin-left:auto">⌘K</kbd></button>
+    <a class="side-link" href="https://github.com" rel="noreferrer"><Github /><span>GitHub</span></a>
+    <span class="side-quiet"><Moon /><span>Night archive</span></span>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-meta">A permanent archive for curious minds.</div>
+  </div>
+</aside>
+
+<div class="mobile-bar">
+  <button class="icon-button" type="button" aria-label="Open navigation" data-toggle-sidebar><PanelLeft /></button>
+  <a class="mobile-brand" href="/"><FlowerMark title="Clarity flower mark" />CLARITY</a>
+  <button class="icon-button" type="button" aria-label="Search" data-open-search><Search /></button>
+</div>

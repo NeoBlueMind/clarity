@@ -1,0 +1,5 @@
+---
+const { class: className = '', title = 'Clarity flower', ...rest } = Astro.props;
+---
+
+<img class={className} src="/favicon.svg" alt={title} {...rest} />

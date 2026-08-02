@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { articleMeta, sortArticles } from '../../lib/articles';
+
+export async function getStaticPaths() {
+  const entries = sortArticles(await getCollection('articles'));
+  const articles = entries.map(articleMeta);
+  const categories = [...new Set(articles.map((article) => article.category))];
+  return categories.map((category) => ({ params: { category: category.toLowerCase().replace(/\s+/g, '-') }, props: { category, articles } }));
+}
+
+const { category, articles } = Astro.props;
+const filtered = articles.filter((article) => article.category.toLowerCase().replace(/\s+/g, '-') === Astro.params.category);
+---
+
+<SiteLayout articles={articles} current="category" title={category}>
+  <div class="content-column">
+    <section class="page-intro">
+      <div class="eyebrow">Category / {category}</div>
+      <h1 class="page-title display">{category}</h1>
+      <p>{filtered.length} {filtered.length === 1 ? 'article' : 'articles'} in this part of the archive.</p>
+    </section>
+    <section class="section compact"><div class="article-grid">{filtered.map((article) => <ArticleCard article={article} />)}</div></section>
+  </div>
+</SiteLayout>

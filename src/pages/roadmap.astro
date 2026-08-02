@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { articleMeta, getArticleHref, sortArticles } from '../lib/articles';
+
+const entries = sortArticles(await getCollection('articles'));
+const articles = entries.map(articleMeta);
+const byNumber = new Map(articles.map((article) => [article.number, article]));
+const days = Array.from({ length: 225 }, (_, index) => index + 1);
+---
+
+<SiteLayout articles={articles} current="roadmap" title="Roadmap">
+  <div class="content-column">
+    <section class="page-intro">
+      <div class="eyebrow">The long view</div>
+      <h1 class="page-title display">225 days of clarity</h1>
+      <p>A deliberate reading path through foundational models and the ideas they made possible. Active days are generated from the Markdown archive; missing entries remain visible as room to grow.</p>
+    </section>
+    <section class="section compact">
+      <div class="roadmap-grid">
+        {days.map((day) => {
+          const article = byNumber.get(day);
+          return article ? <a class="roadmap-day active" href={getArticleHref(article)}><span class="day-number">DAY {String(day).padStart(3, '0')}</span><span class="day-title">{article.title.replace(/^What (.+?) Teaches Us About /, '$1 · ')}</span></a> : <div class="roadmap-day disabled" aria-disabled="true"><span class="day-number">DAY {String(day).padStart(3, '0')}</span><span class="day-title">To be written</span></div>;
+        })}
+      </div>
+    </section>
+  </div>
+</SiteLayout>
