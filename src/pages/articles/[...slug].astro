@@ -83,7 +83,7 @@ const typedArticle = article as Article;
     });
   </script>
   <script>
-    const diagramBlocks = [...document.querySelectorAll('pre code.language-mermaid')];
+    const diagramBlocks = [...document.querySelectorAll('pre[data-language="mermaid"] code, pre code.language-mermaid')];
     if (diagramBlocks.length) {
       const { default: mermaid } = await import('mermaid');
       mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'dark', fontFamily: 'Inter, sans-serif', themeVariables: { primaryColor: '#2F3F3C', primaryTextColor: '#F7F4EF', primaryBorderColor: '#C28A55', lineColor: '#9B5A34', secondaryColor: '#1F2B36', tertiaryColor: '#182024' } });
